@@ -226,6 +226,8 @@ header {
 }
 
 .flash {
+    position: absolute;
+    top: 50px;
     list-style: none;
     padding: 10px 20px;
     margin: 10px 0;

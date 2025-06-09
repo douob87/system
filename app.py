@@ -38,12 +38,10 @@ def chat():
             },
             {"role": "user", "content": user_message},
         ]
-        # 使用新的 chat.completions.create 方法
         resp = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=msgs,
         )
-        # 读取回复内容
         reply = resp.choices[0].message.content
         return jsonify({"reply": reply})
     except Exception as e:

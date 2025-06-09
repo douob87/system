@@ -10,7 +10,11 @@
 
 <body>
     <div class="chat-container">
-        <button id="vedio">前往影片區</button>
+        <div class="nav-button">
+            <button class="btn">前往影片區</button>
+            <button class="btn" onclick="logout()">登出</button>
+        </div>
+
         <div id="chat-messages" class="chat-messages"></div>
         <form id="chat-form" class="chat-form" autocomplete="off">
             <input id="chat-input" type="text" placeholder="輸入訊息..." autocomplete="off" />
@@ -19,5 +23,10 @@
     </div>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+<script>
+    function logout() {
+        window.location.href = '/'; // 跳轉到 home.html
+    }
+</script>
 
 </html>
