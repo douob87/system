@@ -9,7 +9,7 @@
 }
 
 body {
-    background: url("1.jpg");
+    background: url("home.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -245,8 +245,6 @@ header {
 .flash.fade-out {
     opacity: 0;
 }
-
-
 
 @keyframes fadeIn {
     from {
