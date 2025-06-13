@@ -185,7 +185,7 @@ def login():
 
         if user:
             session["username"] = username
-            return redirect(url_for("dashboard"))
+            return redirect(url_for("video"))
         else:
             flash("帳號或密碼錯誤")
             return redirect(url_for("home"))  # 導回首頁，再顯示錯誤訊息
