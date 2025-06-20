@@ -39,7 +39,7 @@ def chat():
                     "你是一位有耐心、善於引導的中文老師。"
                     "當學生提出問題時，你要用繁體中文回答，"
                     "語氣像在課堂上啟發學生思考，"
-                    "並幫助他們一步步理解概念。"
+                    "並幫助他們一步步理解概念，不能直接告訴學生答案。"
                 ),
             },
             {"role": "user", "content": user_message},
@@ -144,7 +144,9 @@ def home():
 # 影片區
 @app.route("/video")
 def video():
-    return render_template("video.html")
+    if "username" not in session:
+        return redirect(url_for("home"))
+    return render_template("video.html", username=session["username"])
 
 
 @app.route("/register", methods=["GET", "POST"])
