@@ -163,10 +163,10 @@ def register():
             )
             conn.commit()
             conn.close()
-            flash("註冊成功，請登入！")
+            flash("註冊成功，請登入！", "alert alert-success")
             return render_template("home.html")
         except sqlite3.IntegrityError:
-            flash("使用者名稱已存在")
+            flash("使用者名稱已存在", "alert alert-danger")
     return render_template("home.html")
 
 
@@ -189,7 +189,7 @@ def login():
             session["username"] = username
             return redirect(url_for("video"))
         else:
-            flash("帳號或密碼錯誤")
+            flash("帳號或密碼錯誤", "alert alert-danger")
             return redirect(url_for("home"))  # 導回首頁，再顯示錯誤訊息
 
     return redirect(url_for("home"))
@@ -206,7 +206,7 @@ def dashboard():
 @app.route("/logout")
 def logout():
     session.pop("username", None)
-    flash("已登出")
+    flash("已登出", "alert alert-success")
     return render_template("home.html")
 
 

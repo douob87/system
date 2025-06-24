@@ -225,27 +225,6 @@ header {
     text-decoration: underline;
 }
 
-.flash {
-    position: absolute;
-    top: 50px;
-    list-style: none;
-    padding: 10px 20px;
-    margin: 10px 0;
-    border: 1px solid #f5c2c7;
-    background-color: #f8d7da;
-    color: #842029;
-    border-radius: 8px;
-    font-weight: bold;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    opacity: 1;
-    transition: opacity 1s ease-out;
-    width: 30%;
-}
-
-.flash.fade-out {
-    opacity: 0;
-}
-
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -258,16 +237,39 @@ header {
     }
 }
 
-.flash .success {
-    background-color: #d1e7dd;
-    color: #0f5132;
-    border: 1px solid #badbcc;
+.custom-flash {
+    position: fixed;
+    text-align: center;
+    top: 40px;
+    left: 50%;
+    width: 15%;
+    transform: translateX(-50%);
+    z-index: 1050;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1em;
+    letter-spacing: 2px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    opacity: 1;
+    transition: opacity 0.5s ease;
 }
 
-.flash .error {
-    background-color: #f8d7da;
-    color: #842029;
-    border: 1px solid #f5c2c7;
+/* 淡出動畫 */
+.custom-flash.fade-out {
+    opacity: 0;
+}
+
+/* ✅ 成功：綠色背景 */
+.custom-flash.success {
+    color: black;
+    background-color: #0ebf37;
+}
+
+/* ❌ 錯誤：紅色背景 */
+.custom-flash.error {
+    color: black;
+    background-color: #d5051a;
 }
 
 @media only screen and (max-width: 786px) {
