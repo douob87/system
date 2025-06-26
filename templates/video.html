@@ -201,8 +201,6 @@
         </div>
 
 
-        </aside>
-
         <!-- 影片與聊天區 -->
         <main class="main">
             <h2>機器學習 - 資料預處理 #1 by 國立屏東大學林彥廷老師</h2>
@@ -218,91 +216,89 @@
     </div>
 
     <script>
+        // 綜合所有 DOMContentLoaded 的初始化內容為一段，避免重複與潛在順序錯誤
 
-        document.addEventListener("DOMContentLoaded", function () {
+        // 初始化所有功能
+        window.addEventListener("DOMContentLoaded", function () {
+            // dropdown 點擊展開/收合
             const dropdowns = document.querySelectorAll(".dropdown-btn");
-
             dropdowns.forEach(btn => {
                 btn.addEventListener("click", function () {
                     const content = this.nextElementSibling;
                     const arrow = this.querySelector(".arrow");
-
                     const isOpen = content.style.display === "block";
-                    // 展開/收合區塊
                     content.style.display = isOpen ? "none" : "block";
-                    // 改變箭頭方向
-                    arrow.innerHTML = isOpen ? "&#9660;" : "&#9650;";
+                    arrow.innerHTML = isOpen ? "&#9660;" : "&#9650;"; // ▼ ▲
                 });
             });
-        });
-    </script>
 
-    <script>
-        // 點擊課程按鈕切換影片 & 套用 active 樣式
-        document.addEventListener("DOMContentLoaded", function () {
+            // 點擊影片按鈕切換 iframe src 與標題 + active 樣式切換
             const buttons = document.querySelectorAll(".dropdown-content button");
             const iframe = document.getElementById("videoPlayer");
-
             buttons.forEach(btn => {
                 btn.addEventListener("click", function () {
                     const videoUrl = this.getAttribute("data-src");
                     iframe.src = videoUrl;
 
-                    //  切換影片標題
                     const title = document.querySelector(".main h2");
                     title.textContent = "機器學習 - " + this.textContent + " by 國立屏東大學林彥廷老師";
 
-                    //  清除所有 active 樣式
                     buttons.forEach(b => b.classList.remove("active"));
-
-                    //  套用當前按鈕 active 樣式
                     this.classList.add("active");
                 });
             });
-        });
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
+
+            // sidebar 滾動特效
             const sidebar = document.querySelector('.sidebar');
+            sidebar.addEventListener('mouseenter', () => sidebar.classList.add('scrollable'));
+            sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('scrollable'));
 
-            sidebar.addEventListener('mouseenter', () => {
-                sidebar.classList.add('scrollable');
-            });
-
-            sidebar.addEventListener('mouseleave', () => {
-                sidebar.classList.remove('scrollable');
-            });
+            // 初始歡迎訊息與歷史紀錄載入
+            addMessage('ai', '你好！有什麼我可以幫忙的嗎？');
+            fetch('/chat/history')
+                .then(res => res.json())
+                .then(history => {
+                    if (Array.isArray(history)) {
+                        for (const msg of history) addMessage(msg.role, msg.content);
+                    } else if (history.error) {
+                        addMessage('ai', '⚠️ 無法載入歷史紀錄：' + history.error);
+                    }
+                })
+                .catch(() => addMessage('ai', '⚠️ 載入紀錄時出錯。'));
         });
-    </script>
 
-    <script>
+        // 切換聊天視窗顯示/隱藏
         function toggleChat() {
             const chatWindow = document.getElementById("chatWindow");
             const botBtn = document.querySelector(".aiRobot-btn");
-
             const isHidden = chatWindow.classList.contains("hidden");
-            if (isHidden) {
-                chatWindow.classList.remove("hidden");
-                botBtn.style.display = "none";
-            } else {
-                chatWindow.classList.add("hidden");
-                botBtn.style.display = "block";
-            }
+            chatWindow.classList.toggle("hidden", !isHidden);
+            botBtn.style.display = isHidden ? "none" : "block";
         }
 
-        const chatMessages = document.getElementById('chat-messages');
-        const chatForm = document.getElementById('chat-form');
-        const chatInput = document.getElementById('chat-input');
-        const clearBtn = document.getElementById('clearBtn');
+        // 加入訊息至聊天框
+        function addMessage(sender, text) {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageRow = document.createElement("div");
+            messageRow.classList.add("message-row", sender);
+            const bubble = document.createElement("div");
+            bubble.classList.add("bubble", sender);
+            bubble.textContent = text;
+            messageRow.appendChild(bubble);
+            chatMessages.appendChild(messageRow);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
 
+        // 清除聊天紀錄與輸入框
+        const clearBtn = document.getElementById('clearBtn');
         clearBtn.addEventListener('click', async () => {
+            const chatMessages = document.getElementById('chat-messages');
+            const chatInput = document.getElementById('chat-input');
             chatMessages.innerHTML = '';
             chatInput.value = '';
-
             try {
                 const res = await fetch('/chat/clear', { method: 'POST' });
                 const result = await res.json();
-
                 if (result.success) {
                     addMessage('ai', '你好！有什麼我可以幫忙的嗎？');
                 } else {
@@ -314,48 +310,22 @@
             }
         });
 
-        function addMessage(role, content) {
-            const div = document.createElement('div');
-            div.classList.add('bubble', role);
-            div.textContent = content;
-            chatMessages.appendChild(div);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        window.addEventListener('DOMContentLoaded', async () => {
-            addMessage('ai', '你好！有什麼我可以幫忙的嗎？');
-
-            try {
-                const res = await fetch('/chat/history');
-                const history = await res.json();
-                if (Array.isArray(history)) {
-                    for (const msg of history) {
-                        addMessage(msg.role, msg.content);
-                    }
-                } else if (history.error) {
-                    addMessage('ai', '⚠️ 無法載入歷史紀錄：' + history.error);
-                }
-            } catch (err) {
-                addMessage('ai', '⚠️ 載入紀錄時出錯。');
-            }
-        });
-
+        // 提交訊息處理
+        const chatForm = document.getElementById('chat-form');
         chatForm.addEventListener('submit', async function (e) {
             e.preventDefault();
+            const chatInput = document.getElementById('chat-input');
             const text = chatInput.value.trim();
             if (!text) return;
-
             addMessage('user', text);
             chatInput.value = '';
             chatInput.focus();
-
             try {
                 const response = await fetch('/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: text }),
                 });
-
                 const data = await response.json();
                 if (data.reply) {
                     addMessage('ai', data.reply);
@@ -366,7 +336,39 @@
                 addMessage('ai', '伺服器錯誤，請稍後再試。');
             }
         });
+
+        // 拖曳聊天視窗
+        window.addEventListener("DOMContentLoaded", () => {
+            const chatWindow = document.getElementById("chatWindow");
+            const chatHeader = chatWindow.querySelector(".chat-header");
+            let isDragging = false;
+            let offsetX = 0;
+            let offsetY = 0;
+
+            chatHeader.addEventListener("mousedown", (e) => {
+                isDragging = true;
+                offsetX = e.clientX - chatWindow.offsetLeft;
+                offsetY = e.clientY - chatWindow.offsetTop;
+                chatWindow.style.transition = "none";
+            });
+
+            document.addEventListener("mousemove", (e) => {
+                if (isDragging) {
+                    chatWindow.style.left = `${e.clientX - offsetX}px`;
+                    chatWindow.style.top = `${e.clientY - offsetY}px`;
+                    chatWindow.style.bottom = "auto";
+                    chatWindow.style.right = "auto";
+                    chatWindow.style.position = "fixed";
+                }
+            });
+
+            document.addEventListener("mouseup", () => {
+                isDragging = false;
+                chatWindow.style.transition = "";
+            });
+        });
     </script>
+
 
 </body>
 

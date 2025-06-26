@@ -262,6 +262,23 @@ body {
     flex-direction: column;
     overflow: hidden;
     z-index: 1001;
+    cursor: default;
+}
+
+/* 一列訊息容器 */
+.message-row {
+    display: flex;
+    margin-bottom: 8px;
+}
+
+/* AI靠左 */
+.message-row.ai {
+    justify-content: flex-start;
+}
+
+/* USER靠右 */
+.message-row.user {
+    justify-content: flex-end;
 }
 
 .logout-link:hover {
@@ -280,6 +297,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    cursor: move;
 }
 
 .close-btn {
@@ -326,26 +344,26 @@ body {
     background-color: #aaa;
 }
 
-/* 氣泡樣式 */
+/* 氣泡通用樣式 */
 .bubble {
-    margin-bottom: 8px;
     padding: 8px 12px;
     border-radius: 12px;
-    max-width: 80%;
-    word-wrap: break-word;
+    max-width: 70%;
+    display: inline-block;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    line-height: 1.4;
+    cursor: text;
 }
 
+/* 使用者泡泡 */
 .bubble.user {
-    width: 50px;
     background-color: #d1ecf1;
-    align-self: flex-end;
-    margin-left: auto;
 }
 
+/* AI 泡泡 */
 .bubble.ai {
     background-color: #f0f0f0;
-    align-self: flex-start;
-    margin-right: auto;
 }
 
 #clearBtn:hover {
