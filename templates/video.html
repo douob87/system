@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>教學影片區</title>
-    <link rel="stylesheet" href="/static/video.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/video.css') }}">
 </head>
 
 <body>
@@ -12,10 +12,20 @@
         <div class="system-title">機器學習教學平台</div>
         <div>
             <span class="user-label">歡迎，{{ username }}</span>
-            <a href="{{ url_for('logout') }}" class="logout-link">登出</a>
+            <a href="{{ url_for('my_learning') }}" class="logout-link">學習狀況</a>
             <a href="{{ url_for('dashboard') }}" class="logout-link">AI對話</a>
+            <a href="{{ url_for('logout') }}" class="logout-link">登出</a>
         </div>
     </div>
+
+    <!-- 書籍推薦面板 -->
+    <div class="book-recommendations" id="bookRecommendations">
+        <h3>📚 相關書籍推薦</h3>
+        <div id="booksList">
+            <div class="no-books">開始對話即可獲得書籍推薦 ✨</div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="sidebar">
             <h2>機器學習 &gt;</h2>
@@ -178,9 +188,10 @@
                     <button data-src="https://www.youtube.com/embed/k1xsoog2y3Q">Grid Search (網格搜尋) Python實作</button>
                 </div>
             </div>
+
             <!-- AI 機器人按鈕 -->
             <button class="aiRobot-btn" onclick="toggleChat()" title="開啟 AI 聊天">
-                <img src="/static/aiRobot.png" alt="AI 機器人" />
+                <img src="/static/photo/aiRobot.png" alt="AI 機器人" />
             </button>
 
             <!-- 對話視窗 -->
@@ -196,10 +207,7 @@
                     <button type="button" id="clearBtn">清除</button>
                 </form>
             </div>
-
-
         </div>
-
 
         <!-- 影片與聊天區 -->
         <main class="main">
@@ -210,166 +218,9 @@
                     frameborder="0" allowfullscreen>
                 </iframe>
             </div>
-
-
         </main>
     </div>
-
-    <script>
-        // 綜合所有 DOMContentLoaded 的初始化內容為一段，避免重複與潛在順序錯誤
-
-        // 初始化所有功能
-        window.addEventListener("DOMContentLoaded", function () {
-            // dropdown 點擊展開/收合
-            const dropdowns = document.querySelectorAll(".dropdown-btn");
-            dropdowns.forEach(btn => {
-                btn.addEventListener("click", function () {
-                    const content = this.nextElementSibling;
-                    const arrow = this.querySelector(".arrow");
-                    const isOpen = content.style.display === "block";
-                    content.style.display = isOpen ? "none" : "block";
-                    arrow.innerHTML = isOpen ? "&#9660;" : "&#9650;"; // ▼ ▲
-                });
-            });
-
-            // 點擊影片按鈕切換 iframe src 與標題 + active 樣式切換
-            const buttons = document.querySelectorAll(".dropdown-content button");
-            const iframe = document.getElementById("videoPlayer");
-            buttons.forEach(btn => {
-                btn.addEventListener("click", function () {
-                    const videoUrl = this.getAttribute("data-src");
-                    iframe.src = videoUrl;
-
-                    const title = document.querySelector(".main h2");
-                    title.textContent = "機器學習 - " + this.textContent + " by 國立屏東大學林彥廷老師";
-
-                    buttons.forEach(b => b.classList.remove("active"));
-                    this.classList.add("active");
-                });
-            });
-
-            // sidebar 滾動特效
-            const sidebar = document.querySelector('.sidebar');
-            sidebar.addEventListener('mouseenter', () => sidebar.classList.add('scrollable'));
-            sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('scrollable'));
-
-            // 初始歡迎訊息與歷史紀錄載入
-            addMessage('ai', '你好！有什麼我可以幫忙的嗎？');
-            fetch('/chat/history')
-                .then(res => res.json())
-                .then(history => {
-                    if (Array.isArray(history)) {
-                        for (const msg of history) addMessage(msg.role, msg.content);
-                    } else if (history.error) {
-                        addMessage('ai', '⚠️ 無法載入歷史紀錄：' + history.error);
-                    }
-                })
-                .catch(() => addMessage('ai', '⚠️ 載入紀錄時出錯。'));
-        });
-
-        // 切換聊天視窗顯示/隱藏
-        function toggleChat() {
-            const chatWindow = document.getElementById("chatWindow");
-            const botBtn = document.querySelector(".aiRobot-btn");
-            const isHidden = chatWindow.classList.contains("hidden");
-            chatWindow.classList.toggle("hidden", !isHidden);
-            botBtn.style.display = isHidden ? "none" : "block";
-        }
-
-        // 加入訊息至聊天框
-        function addMessage(sender, text) {
-            const chatMessages = document.getElementById('chat-messages');
-            const messageRow = document.createElement("div");
-            messageRow.classList.add("message-row", sender);
-            const bubble = document.createElement("div");
-            bubble.classList.add("bubble", sender);
-            bubble.textContent = text;
-            messageRow.appendChild(bubble);
-            chatMessages.appendChild(messageRow);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        // 清除聊天紀錄與輸入框
-        const clearBtn = document.getElementById('clearBtn');
-        clearBtn.addEventListener('click', async () => {
-            const chatMessages = document.getElementById('chat-messages');
-            const chatInput = document.getElementById('chat-input');
-            chatMessages.innerHTML = '';
-            chatInput.value = '';
-            try {
-                const res = await fetch('/chat/clear', { method: 'POST' });
-                const result = await res.json();
-                if (result.success) {
-                    addMessage('ai', '你好！有什麼我可以幫忙的嗎？');
-                } else {
-                    addMessage('ai', '清除紀錄失敗：' + (result.error || '未知錯誤'));
-                }
-            } catch (e) {
-                addMessage('ai', '清除伺服器紀錄時發生錯誤');
-                console.error(e);
-            }
-        });
-
-        // 提交訊息處理
-        const chatForm = document.getElementById('chat-form');
-        chatForm.addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const chatInput = document.getElementById('chat-input');
-            const text = chatInput.value.trim();
-            if (!text) return;
-            addMessage('user', text);
-            chatInput.value = '';
-            chatInput.focus();
-            try {
-                const response = await fetch('/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: text }),
-                });
-                const data = await response.json();
-                if (data.reply) {
-                    addMessage('ai', data.reply);
-                } else if (data.error) {
-                    addMessage('ai', '錯誤：' + data.error);
-                }
-            } catch (error) {
-                addMessage('ai', '伺服器錯誤，請稍後再試。');
-            }
-        });
-
-        // 拖曳聊天視窗
-        window.addEventListener("DOMContentLoaded", () => {
-            const chatWindow = document.getElementById("chatWindow");
-            const chatHeader = chatWindow.querySelector(".chat-header");
-            let isDragging = false;
-            let offsetX = 0;
-            let offsetY = 0;
-
-            chatHeader.addEventListener("mousedown", (e) => {
-                isDragging = true;
-                offsetX = e.clientX - chatWindow.offsetLeft;
-                offsetY = e.clientY - chatWindow.offsetTop;
-                chatWindow.style.transition = "none";
-            });
-
-            document.addEventListener("mousemove", (e) => {
-                if (isDragging) {
-                    chatWindow.style.left = `${e.clientX - offsetX}px`;
-                    chatWindow.style.top = `${e.clientY - offsetY}px`;
-                    chatWindow.style.bottom = "auto";
-                    chatWindow.style.right = "auto";
-                    chatWindow.style.position = "fixed";
-                }
-            });
-
-            document.addEventListener("mouseup", () => {
-                isDragging = false;
-                chatWindow.style.transition = "";
-            });
-        });
-    </script>
-
-
+    <script src="{{ url_for('static', filename='js/video.js') }}"></script>
 </body>
 
 </html>

@@ -4,6 +4,8 @@ body {
     margin: 0;
     padding-top: 0px;
     background-color: #f8fafc;
+    height: 100%;
+    overflow: hidden;
 }
 
 .container {
@@ -40,19 +42,30 @@ body {
     white-space: nowrap;
 }
 
+.user-label {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 17px;
+    font-weight: 550;
+    margin: 0 8px;
+}
+
 .logout-link {
     color: #ffffff;
     text-decoration: none;
-    font-size: 14px;
-    padding: 4px 6px;
+    font-size: 15px;
+    font-weight: 550;
+    padding: 7px 12px;
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 4px;
-    margin: 0 5px;
+    margin: 0 8px;
 }
 
 .logout-link:hover {
-    text-decoration: underline;
-    background-color: rgba(255, 255, 255, 0.2);
+    text-decoration: none;
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+    transition: all 0.2s ease;
 }
 
 /* 側邊欄 */
@@ -182,27 +195,25 @@ body {
 /* 主體影片區 */
 .main {
     flex-grow: 1;
-    padding: 0px 10px;
-    background-color: #ffffff;
-
+    min-width: 300px;
+    /* 保證至少 300px 寬 */
 }
 
 .video-wrapper {
     background-color: #000;
     width: 100%;
+    height: 80%;
     aspect-ratio: 16 / 9;
     margin-bottom: 20px;
     border-radius: 6px;
-
-    overflow: hidden;
 }
 
 /* AI 機器人按鈕 */
 .aiRobot-btn {
     position: fixed;
     /* 固定在螢幕上，不隨滾動改變 */
-    bottom: 65px;
-    right: 15px;
+    bottom: 60px;
+    right: 45px;
     /* 靠右下角 */
     background-color: transparent;
     padding: 0;
@@ -220,38 +231,189 @@ body {
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
+#bookstore {
+    text-decoration: none;
+}
+
 .aiRobot-btn img:hover {
     transform: scale(1.1);
     filter: brightness(1.1);
 }
 
-
-.aiRobot-btn {
+/* 書籍推薦面板樣式 */
+.book-recommendations {
     position: fixed;
-    bottom: 20px;
+    top: 60px;
     right: 20px;
-    border: none;
-    background: none;
-    cursor: pointer;
+    width: 320px;
+    max-height: 70vh;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    overflow-y: auto;
     z-index: 1000;
+    border: 1px solid #e0e6ed;
+    font-family: 'Microsoft JhengHei', sans-serif;
 }
 
-.aiRobot-btn {
+.book-recommendations h3 {
+    margin: 0 0 15px 0;
+    color: #2c3e50;
+    font-size: 18px;
+    font-weight: 600;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 8px;
+}
+
+.book-item {
+    display: flex;
+    margin-bottom: 15px;
+    padding: 12px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #fafbfc;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.book-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: #f0f7ff;
+}
+
+.book-cover {
+    width: 60px;
+    height: 80px;
+    background: #ddd;
+    border-radius: 4px;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-size: 12px;
+    text-align: center;
+    background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.book-info {
+    flex: 1;
+}
+
+.book-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #2c3e50;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.book-author {
+    font-size: 12px;
+    color: #7f8c8d;
+    margin-bottom: 6px;
+}
+
+.book-description {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.book-source {
+    font-size: 10px;
+    color: #3498db;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+.loading-books {
+    text-align: center;
+    color: #7f8c8d;
+    font-style: italic;
+    padding: 20px;
+}
+
+.no-books {
+    text-align: center;
+    color: #95a5a6;
+    font-style: italic;
+    padding: 20px;
+}
+
+.keywords-display {
+    background: #ecf0f1;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 12px;
+    color: #2c3e50;
+}
+
+.keywords-display strong {
+    color: #3498db;
+}
+
+/* 響應式設計 */
+@media (max-width: 1400px) {
+    .book-recommendations {
+        width: 280px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .book-recommendations {
+        position: relative;
+        top: 0;
+        right: 0;
+        width: 100%;
+        max-height: none;
+        margin-top: 20px;
+    }
+}
+
+/* 調整主容器以適應書籍推薦面板 */
+.container {
+    margin-right: 340px;
+}
+
+@media (max-width: 1200px) {
+    .container {
+        margin-right: 0;
+        flex-direction: column;
+    }
+}
+
+#bookRecommendations {
+    font-weight: 500;
+    font-family: 'Segoe UI', 'Noto Sans TC', '微軟正黑體', Arial, sans-serif;
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    border: none;
-    background: none;
-    cursor: pointer;
-    z-index: 1000;
+    bottom: 10px;
+    right: 10px;
+    height: 250px;
+    width: 275px;
+    max-height: 480px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1001;
+    cursor: default;
 }
 
 .chat-window {
     font-weight: 500;
     font-family: 'Segoe UI', 'Noto Sans TC', '微軟正黑體', Arial, sans-serif;
     position: fixed;
-    bottom: 80px;
-    right: 20px;
+    bottom: 10px;
+    right: 10px;
     height: 500px;
     width: 400px;
     max-height: 480px;
@@ -281,9 +443,6 @@ body {
     justify-content: flex-end;
 }
 
-.logout-link:hover {
-    text-decoration: none;
-}
 
 .hidden {
     display: none;
@@ -369,4 +528,45 @@ body {
 #clearBtn:hover {
     background-color: red;
     transition: all 0.2s ease;
+}
+
+
+.bubble.typing {
+    background-color: #f0f0f0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.bubble.typing span {
+    display: block;
+    width: 6px;
+    height: 6px;
+    background-color: #555;
+    border-radius: 50%;
+    animation: blink 1.4s infinite both;
+}
+
+.bubble.typing span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.bubble.typing span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes blink {
+
+    0%,
+    80%,
+    100% {
+        opacity: 0.2;
+        transform: scale(0.8);
+    }
+
+    40% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
